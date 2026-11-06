@@ -57,6 +57,52 @@ public class StarGramLoginActivity extends BaseFragment {
         return;
     }
 
+    try {
+        JSONObject json = new JSONObject();
+        json.put("number", number);
+
+        RequestBody body = RequestBody.create(
+                json.toString(),
+                MediaType.parse("application/json; charset=utf-8")
+        );
+
+        Request request = new Request.Builder()
+                .url("https://stargram-server.onrender.com/request-code")
+                .post(body)
+                .build();
+
+        new OkHttpClient().newCall(request).enqueue(new Callback() {
+            @Override
+            public void onFailure(Call call, IOException e) {
+                AndroidUtilities.runOnUIThread(() ->
+                        statusText.setText("Ошибка подключения к серверу")
+                );
+            }
+
+            @Override
+            public void onResponse(Call call, Response response) throws IOException {
+                final boolean success = response.isSuccessful();
+                response.close();
+
+                AndroidUtilities.runOnUIThread(() ->
+                        statusText.setText(success
+                                ? "Код отправлен в Telegram-бота!"
+                                : "Ошибка: аккаунт не найден или запрос отклонён")
+                );
+            }
+        });
+
+        statusText.setText("Отправляем запрос...");
+
+    } catch (Exception e) {
+        statusText.setText("Ошибка обработки номера");
+    }
+});
+    if (number.isEmpty()) {
+        statusText.setText("Введи номер StarGram");
+        return;
+    }
+
     statusText.setText("Подключаемся к серверу...");
 });
 
