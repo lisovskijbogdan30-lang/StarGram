@@ -6,6 +6,7 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.LinearLayout;
 import android.widget.TextView;
+import java.io.IOException;
 
 import org.telegram.messenger.AndroidUtilities;
 import org.telegram.messenger.StarGramSession;
