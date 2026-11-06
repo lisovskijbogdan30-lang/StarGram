@@ -105,10 +105,70 @@ public class StarGramLoginActivity extends BaseFragment {
 
     statusText.setText("Подключаемся к серверу...");
 });
+loginButton.setOnClickListener(v -> {
+    String number = numberField.getText().toString().trim();
+    String code = codeField.getText().toString().trim();
 
-        loginButton.setOnClickListener(v ->
-                statusText.setText("Следующим шагом подключим проверку кода"));
+    if (number.isEmpty() || code.length() != 5) {
+        statusText.setText("Введи номер и пятизначный код");
+        return;
+    }
 
+    try {
+        JSONObject json = new JSONObject();
+        json.put("number", number);
+        json.put("code", code);
+
+        RequestBody body = RequestBody.create(
+                json.toString(),
+                MediaType.parse("application/json; charset=utf-8")
+        );
+
+        Request request = new Request.Builder()
+                .url("https://stargram-server.onrender.com/verify-code")
+                .post(body)
+                .build();
+
+        new OkHttpClient().newCall(request).enqueue(new Callback() {
+            @Override
+            public void onFailure(Call call, IOException e) {
+                AndroidUtilities.runOnUIThread(() ->
+                        statusText.setText("Ошибка подключения")
+                );
+            }
+
+            @Override
+            public void onResponse(Call call, Response response) throws IOException {
+                String result = response.body() != null
+                        ? response.body().string() : "";
+
+                response.close();
+
+                AndroidUtilities.runOnUIThread(() -> {
+                    try {
+                        JSONObject answer = new JSONObject(result);
+
+                        if (answer.optBoolean("success")) {
+                            String token = answer.getString("sessionToken");
+                            StarGramSession.save(token);
+                            statusText.setText("Вход в StarGram выполнен!");
+                        } else {
+                            statusText.setText("Неверный или просроченный код");
+                        }
+                    } catch (Exception e) {
+                        statusText.setText("Ошибка ответа сервера");
+                    }
+                });
+            }
+        });
+
+        statusText.setText("Проверяем код...");
+
+    } catch (Exception e) {
+        statusText.setText("Ошибка обработки данных");
+    }
+});
+        
         fragmentView = layout;
         return fragmentView;
     }
