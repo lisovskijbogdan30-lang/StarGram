@@ -48,8 +48,16 @@ public class StarGramLoginActivity extends BaseFragment {
         statusText = new TextView(context);
         layout.addView(statusText);
 
-        sendButton.setOnClickListener(v ->
-                statusText.setText("Следующим шагом подключим сервер"));
+        sendButton.setOnClickListener(v -> {
+    String number = numberField.getText().toString().trim();
+
+    if (number.isEmpty()) {
+        statusText.setText("Введи номер StarGram");
+        return;
+    }
+
+    statusText.setText("Подключаемся к серверу...");
+});
 
         loginButton.setOnClickListener(v ->
                 statusText.setText("Следующим шагом подключим проверку кода"));
