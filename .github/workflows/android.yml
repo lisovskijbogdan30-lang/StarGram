@@ -3,9 +3,9 @@ name: Android CI
 
 on:
   push:
-    branches: [ "master" ]
+    branches: ["master"]
   pull_request:
-    branches: [ "master" ]
+    branches: ["master"]
 
 jobs:
   build:
@@ -28,3 +28,10 @@ jobs:
 
       - name: Build with Gradle
         run: ./gradlew :TMessagesProj_App:assembleAfatDebug
+
+      - name: Upload APK
+        uses: actions/upload-artifact@v4
+        with:
+          name: StarGram-APK
+          path: TMessagesProj_App/build/outputs/apk/**/*.apk
+          if-no-files-found: error
