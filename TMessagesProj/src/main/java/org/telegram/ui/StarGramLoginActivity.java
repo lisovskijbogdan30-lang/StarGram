@@ -99,13 +99,7 @@ public class StarGramLoginActivity extends BaseFragment {
         statusText.setText("Ошибка обработки номера");
     }
 });
-    if (number.isEmpty()) {
-        statusText.setText("Введи номер StarGram");
-        return;
-    }
-
-    statusText.setText("Подключаемся к серверу...");
-});
+    
 loginButton.setOnClickListener(v -> {
     String number = numberField.getText().toString().trim();
     String code = codeField.getText().toString().trim();
